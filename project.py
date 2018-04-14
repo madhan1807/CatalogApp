@@ -182,10 +182,10 @@ def catalogItemJSON(category_name, item_name):
     Catalog_Item = session.query(CatalogItem).filter_by(category_id=category.id).first()
     return jsonify(Catalog_Item=Catalog_Item.serialize)
 
-@app.route('/catalog/<string:item_name>/json')
-def catalogItemJSON_2(item_name):
-    Catalog_Item = session.query(CatalogItem).filter_by(name=item_name)()
-    return jsonify(Catalog_Item=Catalog_Item.serialize)
+#@app.route('/catalog/<string:item_name>/json')
+#def catalogItemJSON_2(item_name):
+#    Catalog_Item = session.query(CatalogItem).filter_by(name=item_name)()
+#    return jsonify(Catalog_Item=Catalog_Item.serialize)
 
 @app.route('/catalog/JSON')
 @app.route('/catalog.json')
@@ -244,12 +244,12 @@ def showCategory(category_name):
 
     
 # Create a new menu item
-@app.route('/catalog/<int:category_id>/new/', methods=['GET', 'POST'])
-def newCategoryItem(category_id):
+@app.route('/catalog/<string:category_name>/new/', methods=['GET', 'POST'])
+def newCategoryItem(category_name):
     if 'username' not in login_session:
         return redirect('/login')
 
-    category = session.query(Category).filter_by(id=category_id).one()
+    category = session.query(Category).filter_by(name=category_name).one()
 
     if login_session['user_id'] != category.user_id:
         return "<script>function myFunction() {alert('You are not authorized to add items to this category. Please create your own category in order to add items.');}</script><body onload='myFunction()'>"
@@ -261,7 +261,7 @@ def newCategoryItem(category_id):
         flash('New Category %s Item %s Successfully Created under %s with Cateory id %s ' % (newItem.name,newItem.id,category.name,category.id))
         return redirect(url_for('showCategory', category_name=category.name))
     else:
-        return render_template('newCatalogitem.html', category_id=category_id,category=category)
+        return render_template('newCatalogitem.html', category_name=category_name,category=category)
 
 
 # Edit a menu item
@@ -294,7 +294,7 @@ def editCategoryItem(category_name,item_name):
         return render_template('editCatalogItem.html', categories=categories, item_name=item_name, item=editedItem)
 
 
-# Delete a menu item
+# Delete a Catalog item
 @app.route('/catalog/<string:item_name>/delete', methods=['GET', 'POST'])
 def deleteCategoryItem(item_name):
     if 'username' not in login_session:
